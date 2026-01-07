@@ -19,25 +19,18 @@ app.get("/", (req, res) => {
 app.post("/api/admin/login", (req, res) => {
   const { password } = req.body;
 
-  // 🔍 Logs para depurar
-  console.log("Password recibida del frontend:", password);
-  console.log("ADMIN_PASSWORD desde .env:", process.env.ADMIN_PASSWORD);
-
   if (!password) {
     return res.status(400).json({ ok: false, message: "Falta contraseña" });
   }
 
   if (password === process.env.ADMIN_PASSWORD) {
-    // Contraseña correcta
     return res.json({ ok: true, message: "Acceso permitido" });
   } else {
-    // Contraseña incorrecta
     return res
       .status(401)
       .json({ ok: false, message: "Contraseña incorrecta" });
   }
 });
-
 
 // Conexión a MongoDB
 mongoose
@@ -50,11 +43,13 @@ const ambulanciasRoutes = require("./routes/ambulancias");
 const personalRoutes = require("./routes/personal");
 const clientesRoutes = require("./routes/clientes");
 const serviciosRoutes = require("./routes/servicios");
+const contactoRoutes = require("./routes/contacto");
 
 app.use("/api/ambulancias", ambulanciasRoutes);
 app.use("/api/personal", personalRoutes);
 app.use("/api/clientes", clientesRoutes);
 app.use("/api/servicios", serviciosRoutes);
+app.use("/api/contacto", contactoRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
