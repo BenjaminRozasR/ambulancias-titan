@@ -1,0 +1,3 @@
+# Ignorar cosas del backend
+server/.env
+server/node_modules/
