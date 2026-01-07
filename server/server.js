@@ -19,6 +19,10 @@ app.get("/", (req, res) => {
 app.post("/api/admin/login", (req, res) => {
   const { password } = req.body;
 
+  // 🔍 Logs para depurar
+  console.log("Password recibida del frontend:", password);
+  console.log("ADMIN_PASSWORD desde .env:", process.env.ADMIN_PASSWORD);
+
   if (!password) {
     return res.status(400).json({ ok: false, message: "Falta contraseña" });
   }
@@ -33,6 +37,7 @@ app.post("/api/admin/login", (req, res) => {
       .json({ ok: false, message: "Contraseña incorrecta" });
   }
 });
+
 
 // Conexión a MongoDB
 mongoose
