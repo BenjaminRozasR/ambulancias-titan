@@ -1,8 +1,10 @@
 // server/routes/contacto.js
 const express = require("express");
-const nodemailer = require("nodemailer");
-
 const router = express.Router();
+const sgMail = require("@sendgrid/mail");
+
+// Configurar SendGrid con la API key del entorno
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 router.post("/", async (req, res) => {
   const { nombre, email, telefono, mensaje } = req.body;
@@ -12,21 +14,12 @@ router.post("/", async (req, res) => {
   }
 
   try {
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-      
-      tls: {
-        rejectUnauthorized: false,
-      },
-    });
+    const to = process.env.EMAIL_TO || process.env.EMAIL_FROM;
+    const from = process.env.EMAIL_FROM;
 
     const mailOptions = {
-      from: `"Ambulancias Titan" <${process.env.EMAIL_USER}>`,
-      to: process.env.EMAIL_TO || process.env.EMAIL_USER,
+      to,
+      from,
       subject: "Nuevo mensaje desde el formulario de contacto",
       text: `
 Nombre: ${nombre}
@@ -45,11 +38,11 @@ ${mensaje}
       `,
     };
 
-    await transporter.sendMail(mailOptions);
+    await sgMail.send(mailOptions);
 
     res.json({ ok: true, message: "Correo enviado correctamente" });
   } catch (error) {
-    console.error("Error al enviar correo de contacto:", error);
+    console.error("Error al enviar correo de contacto (SendGrid):", error);
     res
       .status(500)
       .json({ error: "Error al enviar el mensaje", detail: error.message });
