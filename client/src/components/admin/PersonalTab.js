@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../../config";
 
 // Endpoint del backend para el CRUD de personal
-const API_URL = "http://localhost:5000/api/personal";
+const API_URL = `${API_BASE_URL}/api/personal`;
 
 const PersonalTab = () => {
   // Lista de personas

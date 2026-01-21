@@ -1,8 +1,9 @@
 // src/components/admin/ServiciosTab.jsx
 import { useState, useEffect } from "react";
+import { API_BASE_URL } from "../../config";
 
 // Endpoint del backend para el CRUD de servicios
-const API_URL = "http://localhost:5000/api/servicios";
+const API_URL = `${API_BASE_URL}/api/servicios`;
 
 export default function ServiciosTab() {
   // Lista de servicios ob

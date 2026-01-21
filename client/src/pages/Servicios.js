@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../config";
 
-const API_URL = "http://localhost:5000/api/servicios";
+const API_URL = `${API_BASE_URL}/api/servicios`;
 
 function Servicios() {
   const [servicios, setServicios] = useState([]);

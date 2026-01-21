@@ -6,13 +6,29 @@ require("dotenv").config();
 
 const app = express();
 
-// Middleware
-app.use(cors());
+// Middleware CORS - Permitir todas las peticiones desde cualquier origen
+app.use(
+  cors({
+    origin: "*", // Permitir todos los orígenes (puedes restringir esto en producción)
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 app.use(express.json());
 
 // Ruta de prueba
 app.get("/", (req, res) => {
   res.send("Servidor de Ambulancias Titan funcionando 🚑");
+});
+
+// Health check endpoint
+app.get("/health", (req, res) => {
+  res.json({
+    status: "ok",
+    message: "Servidor funcionando correctamente",
+    timestamp: new Date().toISOString(),
+    mongodb: mongoose.connection.readyState === 1 ? "conectado" : "desconectado",
+  });
 });
 
 // ✅ Ruta de login para el panel administrativo

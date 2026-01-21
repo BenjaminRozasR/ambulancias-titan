@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config";
 
 export default function ServiciosAdmin() {
   const [servicios, setServicios] = useState([]);
@@ -9,7 +10,7 @@ export default function ServiciosAdmin() {
     precio: "",
   });
 
-  const API_URL = "http://localhost:5000/api/servicios";
+  const API_URL = `${API_BASE_URL}/api/servicios`;
 
   // Cargar servicios al iniciar
   useEffect(() => {

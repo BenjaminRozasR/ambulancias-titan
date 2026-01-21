@@ -1,6 +1,7 @@
 // src/pages/Contacto.js
 import { useState } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../config";
 import { FiPhone, FiGlobe, FiMail, FiMapPin } from "react-icons/fi";
 import { FaInstagram, FaFacebookF, FaWhatsapp } from "react-icons/fa";
 
@@ -15,7 +16,7 @@ export default function Contacto() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/contacto", form);
+      await axios.post(`${API_BASE_URL}/api/contacto`, form);
       alert("Mensaje enviado correctamente. Te contactaremos pronto.");
       setForm({ nombre: "", email: "", telefono: "", mensaje: "" });
     } catch (error) {

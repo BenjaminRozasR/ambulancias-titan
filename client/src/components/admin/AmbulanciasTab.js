@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { API_BASE_URL } from "../../config";
 
 // Endpoint del backend para el CRUD de ambulancias
-const API_URL = "http://localhost:5000/api/ambulancias";
+const API_URL = `${API_BASE_URL}/api/ambulancias`;
 
 const AmbulanciasTab = () => {
   // lista de ambulancias 
