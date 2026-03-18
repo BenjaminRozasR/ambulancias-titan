@@ -6,10 +6,35 @@ require("dotenv").config();
 
 const app = express();
 
-// Middleware CORS - Permitir todas las peticiones desde cualquier origen
+// --- OPTIMIZACIÓN DE CONEXIÓN (Caché para Vercel) ---
+let isConnected = false;
+
+const connectDB = async () => {
+  if (isConnected) {
+    return; // Si ya hay conexión, salimos de inmediato
+  }
+
+  try {
+    const db = await mongoose.connect(process.env.MONGO_URI, {
+      bufferCommands: false, // Mejora el rendimiento en serverless
+    });
+    isConnected = db.connections[0].readyState;
+    console.log("✅ Conexión establecida/reutilizada con MongoDB");
+  } catch (err) {
+    console.error("❌ Error al conectar a MongoDB:", err);
+  }
+};
+
+// Middleware: Conecta a la DB en cada petición (es casi instantáneo si ya está conectado)
+app.use(async (req, res, next) => {
+  await connectDB();
+  next();
+});
+// --------------------------------------------------
+
 app.use(
   cors({
-    origin: "*", // Permitir todos los orígenes (puedes restringir esto en producción)
+    origin: "*", 
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"],
   })
@@ -21,40 +46,25 @@ app.get("/", (req, res) => {
   res.send("Servidor de Ambulancias Titan funcionando 🚑");
 });
 
-// Health check endpoint
+// Health check endpoint (Usaremos este para el despertador)
 app.get("/health", (req, res) => {
   res.json({
     status: "ok",
-    message: "Servidor funcionando correctamente",
-    timestamp: new Date().toISOString(),
     mongodb: mongoose.connection.readyState === 1 ? "conectado" : "desconectado",
   });
 });
 
-// ✅ Ruta de login para el panel administrativo
+// Ruta de login para el panel administrativo
 app.post("/api/admin/login", (req, res) => {
   const { password } = req.body;
-
-  if (!password) {
-    return res.status(400).json({ ok: false, message: "Falta contraseña" });
-  }
-
   if (password === process.env.ADMIN_PASSWORD) {
     return res.json({ ok: true, message: "Acceso permitido" });
   } else {
-    return res
-      .status(401)
-      .json({ ok: false, message: "Contraseña incorrecta" });
+    return res.status(401).json({ ok: false, message: "Contraseña incorrecta" });
   }
 });
 
-// Conexión a MongoDB
-mongoose
-  .connect(process.env.MONGO_URI)
-  .then(() => console.log("✅ Conectado a MongoDB"))
-  .catch((err) => console.error("❌ Error al conectar a MongoDB:", err));
-
-// Rutas
+// Importación de Rutas
 const ambulanciasRoutes = require("./routes/ambulancias");
 const personalRoutes = require("./routes/personal");
 const clientesRoutes = require("./routes/clientes");
