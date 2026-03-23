@@ -5,8 +5,38 @@ import { API_BASE_URL } from "../config";
 
 const API_URL = `${API_BASE_URL}/api/servicios`;
 
+
+const LoadingScreen = () => (
+  <div style={{
+    height: '100vh', display: 'flex', flexDirection: 'column',
+    justifyContent: 'center', alignItems: 'center', backgroundColor: '#f8fafc',
+    textAlign: 'center', padding: '20px', fontFamily: 'sans-serif'
+  }}>
+    <img src="/logo.png" alt="Ambulancias Titan" style={{ width: '120px', marginBottom: '30px' }} />
+    <div className="spinner"></div>
+    <h2 style={{ color: '#0f172a', fontSize: '24px', margin: '10px 0', fontWeight: '800' }}>
+      Cargando servicios...
+    </h2>
+    <p style={{ color: '#64748b', fontSize: '16px', lineHeight: '1.5' }}>
+      Estamos preparando todo para su atención.<br />
+      <strong>Por favor, espere unos segundos.</strong>
+    </p>
+    <style>{`
+      .spinner {
+        border: 4px solid rgba(0, 0, 0, 0.1);
+        width: 45px; height: 45px; border-radius: 50%;
+        border-left-color: #2563eb;
+        animation: spin 1s linear infinite;
+        margin-bottom: 20px;
+      }
+      @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    `}</style>
+  </div>
+);
+
 function Servicios() {
   const [servicios, setServicios] = useState([]);
+  const [loading, setLoading] = useState(true); 
   const navigate = useNavigate();
 
   // Cargar servicios desde el backend
@@ -17,11 +47,19 @@ function Servicios() {
         setServicios(res.data);
       } catch (error) {
         console.error("Error al obtener servicios:", error);
+      } finally {
+        
+        setLoading(false); 
       }
     };
 
     fetchServicios();
   }, []);
+
+  
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   const formatPrecio = (precio) => {
     if (precio == null || precio === "") return "";
@@ -30,7 +68,6 @@ function Servicios() {
     return `$${n.toLocaleString("es-CL")}`;
   };
 
-  // emojis
   const getIcon = (nombre = "") => {
     const n = nombre.toLowerCase();
     if (n.includes("alta")) return "🏠";
@@ -42,7 +79,6 @@ function Servicios() {
     return "🚑";
   };
 
-  
   const esPorHora = (nombre = "") => {
     const n = nombre.toLowerCase();
     return n.includes("evento") || n.includes("hora");
